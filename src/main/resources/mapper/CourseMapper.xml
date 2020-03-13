@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.CourseMapper">
+  <resultMap id="BaseResultMap" type="com.ning.pojo.Course">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="classify" jdbcType="VARCHAR" property="classify" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="onsole" jdbcType="VARCHAR" property="onsole" />
+    <result column="brief" jdbcType="VARCHAR" property="brief" />
+    <result column="imgurl" jdbcType="VARCHAR" property="imgurl" />
+    <result column="imgbigurl" jdbcType="VARCHAR" property="imgbigurl" />
+    <result column="recommerd" jdbcType="TINYINT" property="recommerd" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="updatetime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="updateuser" jdbcType="VARCHAR" property="updateuser" />
+  </resultMap>
+  <select id="queryThreeCoursesByTime" resultType="com.ning.pojo.Course">
+        select * from course t ORDER BY t.createtime DESC LIMIT 0,3
+  </select>
+
+  <select id="queryThreeCoursesByDZ" resultType="com.ning.pojo.Course">
+       SELECT s.* from course s,
+(SELECT COUNT(*) repeats,t.courseid FROM course_user_zan t GROUP BY t.courseid ORDER BY repeats DESC LIMIT 0,3) g
+WHERE s.cid=g.courseid
+LIMIT 0,3
+  </select>
+
+  <select id="queryThreeCoursesByGZ" resultType="com.ning.pojo.Course">
+     SELECT c.* FROM
+    (SELECT COUNT(*) repeats,stu.courseid FROM course_user_study stu GROUP BY stu.courseid ORDER BY repeats DESC LIMIT 0,3) s
+    LEFT  JOIN course c
+    ON s.courseid=c.cid
+    LIMIT 0,3
+  </select>
+</mapper>
