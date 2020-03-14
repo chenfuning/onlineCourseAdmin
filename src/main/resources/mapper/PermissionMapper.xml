@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.PermissionMapper">
+  <resultMap id="BaseResultMap" type="com.ning.pojo.Permission">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="permissionId" jdbcType="VARCHAR" property="permissionid" />
+    <result column="parentId" jdbcType="VARCHAR" property="parentid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="css" jdbcType="VARCHAR" property="css" />
+    <result column="href" jdbcType="VARCHAR" property="href" />
+    <result column="type" jdbcType="BIT" property="type" />
+    <result column="permission" jdbcType="VARCHAR" property="permission" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+  </resultMap>
+</mapper>

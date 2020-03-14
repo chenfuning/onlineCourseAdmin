@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ning.mapper.RoleuserMapper">
+  <resultMap id="BaseResultMap" type="com.ning.pojo.Roleuser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="userId" jdbcType="VARCHAR" property="userid" />
+    <id column="roleId" jdbcType="VARCHAR" property="roleid" />
+  </resultMap>
+
+  <update id="updateroleuser" parameterType="com.ning.pojo.Roleuser">
+    update roleuser t
+    <set>
+      <if test="roleid != null">
+        roleId = #{roleid},
+      </if>
+    </set>
+    where t.userId = #{userid}
+  </update>
+</mapper>
