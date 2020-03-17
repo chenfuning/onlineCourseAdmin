@@ -80,12 +80,13 @@ public class UserController {
      */
     @GetMapping("/edit")
     public String editAdmin(Model model,Admin admin){
+        System.out.println(1111);
         model.addAttribute(userService.getUserById(admin.getAdminid()));
         return "user/user-edit";
     }
     /**
      * 修改form表单提交
-     * @param userDto
+     * @param
      * @param roleId
      * @return
      */
@@ -105,5 +106,17 @@ public class UserController {
         else{
             return Results.failure();
         }
+    }
+    /**
+     * 模糊查询用户
+     * @param pageTableRequest
+     * @param
+     * @return
+     */
+    @GetMapping("/findAdminByFuzzyName")
+    @ResponseBody
+    public Results<Admin> findAdminByFuzzyName(PageTableRequest pageTableRequest, String name){
+        pageTableRequest.countOffset();
+        return userService.getAdminByFuzzyName(name,pageTableRequest.getOffset(),pageTableRequest.getLimit());
     }
 }

@@ -90,10 +90,14 @@ function initMenuCheck(ids) {
 }
 
 function initRadioCheckTree(){
-	var id = $("#parentId").attr("value");
-	if(id != undefined && id.length > 0){
+	//有接收传递过来的parentid放在input里
+	var pid = $("#parentid").attr("value");
+	if(pid != undefined && pid.length > 0){
+		//把input里的parentid显示在treeDemo里
         var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-        var node = treeObj.getNodeByParam("id", id, null);
+        //节点属性和pid相同的节点
+        var node = treeObj.getNodeByParam("pId", pid, null);
+        //该node节点改为cheak=true，即为选中
         treeObj.checkNode(node, true, false);
 	}
 }
@@ -122,8 +126,8 @@ function getCheckedMenuIds(){
 //noShowBtn:树形列表中不显示按钮选择项，默认没值代表显示，true代表不显示
 function createNode(d,noShowBtn) {
 
-	var id = d['id'];
-	var pId = d['parentId'];
+	var id = d['permissionid'];
+	var pId = d['parentid'];
 	var name = d['name'];
 	var child = d['child'];
 

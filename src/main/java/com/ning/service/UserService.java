@@ -42,4 +42,13 @@ public interface UserService {
      * @return
      */
     int deleteAdmin(String adminid);
+
+    /**
+     * 根据名字查询用户（分页方式）
+     * @param username
+     * @param offset
+     * @param limit
+     * @return
+     */
+    Results<Admin> getAdminByFuzzyName(String username, Integer offset, Integer limit);
 }

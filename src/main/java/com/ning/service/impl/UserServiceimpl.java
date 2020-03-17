@@ -69,8 +69,12 @@ public class UserServiceimpl implements UserService {
         roleuserMapper.deleteRoleUserByUserId(adminid);
         //删除用户表
         int delResult =adminMapper.deleteByPrimaryKey(adminid);
-
         return  delResult;
+    }
 
+    @Override
+    public Results<Admin> getAdminByFuzzyName(String username, Integer offset, Integer limit) {
+        //提供中的条数，和具体的数据
+        return Results.success(adminMapper.getAdminByFuzzyname(username).intValue(),adminMapper.getAdminByFuzzynameByPage(username,offset,limit));
     }
 }
