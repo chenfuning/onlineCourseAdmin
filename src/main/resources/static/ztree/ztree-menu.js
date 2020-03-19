@@ -95,7 +95,7 @@ function initRadioCheckTree(){
 		//把input里的parentid显示在treeDemo里
         var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
         //节点属性和pid相同的节点
-        var node = treeObj.getNodeByParam("pId", pid, null);
+        var node = treeObj.getNodeByParam("id", pid, null);
         //该node节点改为cheak=true，即为选中
         treeObj.checkNode(node, true, false);
 	}

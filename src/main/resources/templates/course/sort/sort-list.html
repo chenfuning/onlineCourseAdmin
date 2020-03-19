@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>课程分类列表</title>
+    <header th:replace="header::html"></header>
+</head>
+<body>
+<div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">课程分类管理</a>
+            <a>
+                <cite>课程分类列表</cite></a>
+          </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row  layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!-- table上面的按钮-->
+                <div class="layui-card-header">
+                    <form class="layui-form layui-col-md12 x-so" id="layuiFormPermission">
+                        <a class="layui-btn" id="crollAll" >折叠展开</a>
+                        <a class="layui-btn" onclick="xadmin.open('新增权限','/permission/add')" permission="sys:menu:add"><i class="layui-icon"></i>新增分类</a>
+                    </form>
+                </div>
+                <!-- table主体-->
+                <div class="layui-card-body ">
+                    <table  id="menuTable" class="layui-hide" lay-filter="test"></table>
+                </div>
+                <script type="text/html" id="toolbarDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="edit" permission="sys:menu:edit">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"  permission="sys:menu:del">删除</a>
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    var treetable, renderTable;
+    layui.config({
+        base: '/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use('treetable',function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        treetable = layui.treetable;
+        //定义一个方法
+        renderTable = function(){
+            treetable.render({
+                // 渲染表格
+                treeColIndex: 1,// treetable新增参数
+                treeSpid: 0,
+                treeIdName:'code',// treetable新增参数
+                treePidName: 'parentCode',     // treetable新增参数
+                treeLinkage: true,        // treetable新增参数
+                elem: '#menuTable',
+                url: '/course/sortlist',
+                cols: [
+                    [
+                        {type: 'numbers'},
+                        {field: 'csid',width:180, title: '分类id'},
+                        {field: 'name',width:160, title: '分类名称'},
+                        {field: 'createtime',width:60, title: '分类创建时间'},
+                        {field:'updatetime',title:'分类创建时间'},
+                        {title:'操作',toolbar:'#toolbarDemo'}
+                    ]
+                ],
+                done:function(){
+                    //checkPermission();
+                }
+            });
+
+        };
+        renderTable();
+        /**
+         * 折叠
+         */
+        var croll = false;
+        $("#crollAll").click(function () {
+            if(croll){
+                treetable.expandAll('#menuTable');
+                croll=false;
+            }else{
+                treetable.foldAll('#menuTable');
+                croll=true;
+            }
+        });
+
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        url: "/permission/delete",
+                        type: "GET",
+                        data: {permissionid: data.permissionid},
+                        dataType: 'json',
+                        success: function (result) {
+                            layer.alert("删除成功", {icon: 1}, function (index1) {
+                                layer.close(index1);
+                                xadmin.father_reload();
+                                //table.reload('table');
+                            });
+                        },
+                    });
+
+                });
+            } else if (obj.event === 'edit') {
+                xadmin.open('编辑permission信息', '/permission/edit/?permissionid=' + data.permissionid);
+            }
+        });
+       // checkPermission();
+    });
+
+</script>
+
+</html>
