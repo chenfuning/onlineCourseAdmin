@@ -8,4 +8,12 @@
     <id column="roleId" jdbcType="VARCHAR" property="roleid" />
     <id column="permissionId" jdbcType="VARCHAR" property="permissionid" />
   </resultMap>
+
+  <insert id="save">
+    insert into rolepermission(roleId, permissionId) values
+    <foreach collection="permissionIds" item="permissionId"
+             separator=",">
+      (#{roleid}, #{permissionId})
+    </foreach>
+  </insert>
 </mapper>

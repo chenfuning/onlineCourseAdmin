@@ -10,6 +10,8 @@ import com.ning.service.RoleService;
 import com.ning.service.UserService;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +45,7 @@ public class UserController {
      * @return
      */
     @GetMapping("/add")
+    @PreAuthorize("hasAuthority('sys:user:add')")
     public String addUser(Model model){
         model.addAttribute(new Admin());
         return "user/user-add";
@@ -55,6 +58,7 @@ public class UserController {
      */
     @PostMapping("/add")
     @ResponseBody
+    @PreAuthorize("hasAuthority('sys:user:add')")
     public Results<Admin> saveUser(AdminDto adminDto, Integer roleId){
         //用户是否可用，默认让他可用
         Byte a=1;
@@ -62,8 +66,8 @@ public class UserController {
         String adminid=sid.nextShort();
         adminDto.setAdminid(adminid);
         String roleIdtoStr= Integer.toString(roleId);
-//        //密码用springScurity自带加密
-//        userDto.setPassword(new BCryptPasswordEncoder().encode(userDto.getPassword()));
+        //密码用springScurity自带加密
+        adminDto.setPassword(new BCryptPasswordEncoder().encode(adminDto.getPassword()));
 //        //密码用MD5加密
 //        //userDto.setPassword(MD5.crypt(userDto.getPassword()));
 
@@ -92,6 +96,7 @@ public class UserController {
      */
     @PostMapping("/edit")
     @ResponseBody
+    @PreAuthorize("hasAuthority('sys:user:edit')")
     public Results<Admin> updateUser(AdminDto adminDto,String roleId){
         //根据roleId更改adminDto.type的值
         adminDto.setAdmintype(roleService.getRolenameByid(roleId).getRolename());
@@ -99,6 +104,7 @@ public class UserController {
     }
     @GetMapping("/delete")
     @ResponseBody
+    @PreAuthorize("hasAuthority('sys:user:del')")
     public Results deleteUser(AdminDto adminDto){
         int count=userService.deleteAdmin(adminDto.getAdminid());
         if(count>0)
@@ -115,6 +121,7 @@ public class UserController {
      */
     @GetMapping("/findAdminByFuzzyName")
     @ResponseBody
+    @PreAuthorize("hasAuthority('sys:user:query')")
     public Results<Admin> findAdminByFuzzyName(PageTableRequest pageTableRequest, String name){
         pageTableRequest.countOffset();
         return userService.getAdminByFuzzyName(name,pageTableRequest.getOffset(),pageTableRequest.getLimit());

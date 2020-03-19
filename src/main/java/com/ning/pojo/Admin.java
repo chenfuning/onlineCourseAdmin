@@ -22,6 +22,11 @@ public class Admin {
 
     private String bz;
 
+    public interface Status {
+        int DISABLED = 0;
+        int VALID = 1;
+
+    }
     /**
      * @return adminid
      */

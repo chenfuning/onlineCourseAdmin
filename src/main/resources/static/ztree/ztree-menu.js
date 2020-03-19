@@ -58,16 +58,15 @@ function getMenuTree() {
 }
 
 function initMenuDatas(roleId){
-	console.log(roleId)
     $.ajax({
         type : 'get',
-        url : '/rolepermission/listAllPermissionByRoleId?id=' + roleId,
+        url : '/rolepermission/listAllPermissionByRoleId?roleid=' + roleId,
         success : function(ret) {
             var data = ret.datas;
             var length = data.length;
             var ids = [];
             for(var i=0; i<length; i++){
-                ids.push(data[i]['id']);
+                ids.push(data[i]['permissionid']);
             }
             initMenuCheck(ids);
         }

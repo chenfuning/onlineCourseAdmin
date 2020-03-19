@@ -51,4 +51,11 @@ public interface UserService {
      * @return
      */
     Results<Admin> getAdminByFuzzyName(String username, Integer offset, Integer limit);
+
+    /**
+     * 获取admin工具name
+     * @param name
+     * @return
+     */
+    Admin getAdmin(String name);
 }

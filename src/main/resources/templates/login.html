@@ -37,11 +37,9 @@
                     url : '/login',
                     data : $("#login-form").serialize(),
                     success : function(datas) {
-
                         if(datas.authenticated == true){
-                            localStorage.setItem("userId", datas.principal.id);
-                            localStorage.setItem("username", datas.principal.username);
-                            localStorage.setItem("nickName", datas.principal.nickname);
+                            localStorage.setItem("adminid", datas.principal.adminid);
+                            localStorage.setItem("adminname", datas.principal.name);
                             var authorities = datas.authorities;
                             var permission = [];
                             for(var i in authorities){

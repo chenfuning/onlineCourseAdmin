@@ -2,6 +2,7 @@ package com.ning.service.impl;
 
 import com.ning.mapper.RoleuserMapper;
 import com.ning.pojo.Dto.AdminDto;
+import com.ning.pojo.Permission;
 import com.ning.pojo.Roleuser;
 import com.ning.result.Results;
 import com.ning.mapper.AdminMapper;
@@ -9,6 +10,7 @@ import com.ning.pojo.Admin;
 import com.ning.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class UserServiceimpl implements UserService {
@@ -76,5 +78,16 @@ public class UserServiceimpl implements UserService {
     public Results<Admin> getAdminByFuzzyName(String username, Integer offset, Integer limit) {
         //提供中的条数，和具体的数据
         return Results.success(adminMapper.getAdminByFuzzyname(username).intValue(),adminMapper.getAdminByFuzzynameByPage(username,offset,limit));
+    }
+    /**
+     * 获取admin工具name
+     * @param name
+     * @return
+     */
+    public Admin getAdmin(String name){
+        Example adminExample=new Example(Admin.class);
+        Example.Criteria criteria=adminExample.createCriteria();
+        criteria.andEqualTo("name",name);
+        return adminMapper.selectOneByExample(adminExample);
     }
 }

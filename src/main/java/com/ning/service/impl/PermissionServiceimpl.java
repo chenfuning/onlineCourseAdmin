@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PermissionServiceimpl implements PermissionService {
     @Autowired
@@ -53,4 +55,22 @@ public class PermissionServiceimpl implements PermissionService {
         permissionMapper.deleteByExample(permissionExample);
         return Results.success();
     }
+
+    @Override
+    public Results<Permission> listByRoleId(String roleid) {
+        List<Permission> datas=permissionMapper.listByRoleId(roleid);
+        return Results.success(0,datas);
+    }
+
+    @Override
+    public Results getMenu(String adminid) {
+        List<Permission> datas=permissionMapper.listByAdminId(adminid);
+        //动态菜单不显示按钮，把按钮的数据即type==2的去除,留下type等于1的。
+        datas=datas.stream().filter(p->p.getType().equals(true)).collect(Collectors.toList());
+        JSONArray array=new JSONArray();
+        //构建了一个JSONarray 菜单树
+        TreeUtils.setPermissionsTree("0",datas, array);
+        return Results.success(array);
+    }
+
 }
