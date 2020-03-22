@@ -49,6 +49,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         //http所有请求都需要验证
         http.authorizeRequests()
                 .antMatchers("/login.html",
+                        "/testimages/**",
                         "/my/**",
                         "/xadmin/**",
                         "/treeable-lay/**",

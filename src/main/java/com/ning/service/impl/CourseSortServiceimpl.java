@@ -69,4 +69,20 @@ public class CourseSortServiceimpl implements CourseSortService {
         courseSortMapper.deleteByPrimaryKey(csid);
         return Results.success();
     }
+
+    @Override
+    public List<CourseSort> getSeCourseSortsByparentCode(String parentCodeName) {
+        Example csparentExample=new Example(CourseSort.class);
+        Example.Criteria criteria=csparentExample.createCriteria();
+        criteria.andEqualTo("name",parentCodeName);
+        List<CourseSort> list=courseSortMapper.selectByExample(csparentExample);
+        if(!list.isEmpty()) {
+            Example csExample = new Example(CourseSort.class);
+            Example.Criteria criteria1 = csExample.createCriteria();
+            criteria1.andEqualTo("parentCode", list.get(0).getCode());
+            List<CourseSort> result = courseSortMapper.selectByExample(csExample);
+            return result;
+        }else
+            return null;
+    }
 }

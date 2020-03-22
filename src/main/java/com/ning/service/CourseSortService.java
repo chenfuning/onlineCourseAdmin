@@ -3,6 +3,8 @@ package com.ning.service;
 import com.ning.pojo.CourseSort;
 import com.ning.result.Results;
 
+import java.util.List;
+
 public interface CourseSortService {
     Results getSortlist();
 
@@ -48,4 +50,6 @@ public interface CourseSortService {
      * @return
      */
     Results delete(String csid);
+
+    List<CourseSort> getSeCourseSortsByparentCode(String parentCodeName);
 }

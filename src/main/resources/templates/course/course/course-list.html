@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>课程列表</title>
+    <header th:replace="header::html"></header>
+
+</head>
+<body>
+<div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">课程列表</a>
+            <a href="">课程管理</a>
+            <a>
+                <cite>课程列表</cite></a>
+          </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row  layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <form class="layui-form  layui-col-space5">
+                        <div class="layui-inline layui-show-xs-block">
+                            <input type="text" name="name"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn"  lay-submit="" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="layui-card-header">
+                    <button class="layui-btn layui-btn-danger" onclick="delAll()" ><i class="layui-icon"></i>批量删除</button>
+                    <button class="layui-btn" onclick="xadmin.open('创建课程','/course/addcourse')" permission="" ><i class="layui-icon"></i>添加课程</button>
+                </div>
+
+                <div class="layui-card-body ">
+                    <table  id="demo" class="layui-hide" lay-filter="member"></table>
+                </div>
+                <script type="text/html" id="toolbarDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="edit" permission="">编辑</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" permission="">删除</a>
+                    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="editzj" permission="">章节管理</a>
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+
+    layui.use('table',function () {
+        var table = layui.table;
+        var  form = layui.form;
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,url: '/course/courselist' //数据接口
+            ,page: true //开启分页
+            ,response:{
+                dataName:'datas'//规定数据列表的字段名称，默认：data
+            }
+            ,cols: [
+                [ //表头
+                    {field: 'cid', title: 'cid', align:'center', width:50}
+                     ,{field: 'imgurl', title: '课程图片', style:"height:60px",templet:function(d){return '<div><img  style="width:50%;height:100%" src="'+app.imgserverUrl+d.imgurl+'" alt="" ></div>'}}
+                    // ,{field: 'imgurl', title: '课程图片',style:"height:60px",templet:'<div><img style="width:50%;height:100%" src="'+serverimgurl+'"></div>'}
+                    ,{field: 'name', title: '课程名称'}
+                    ,{field: 'classify', title: '课程分类'}
+                    ,{field: 'username', title: '上传者'}
+                    ,{field: 'level', title: '课程等级'}
+                    ,{field: 'onsole', title: '是否上架'}
+                    ,{field: 'brief', title: '简介'}
+                    ,{fixed: 'right', title:'操作',toolbar:'#toolbarDemo',  width:300,style:"height:60px"}//开启头部工具栏，并为其绑定左侧模板
+                ]
+            ],
+            done:function(){
+                //checkPermission();
+            }
+        });
+        //监听工具条
+        table.on('tool(member)', function(obj){
+            var data = obj.data;
+            switch(obj.event){
+                case 'del':
+                    layer.confirm('真的删除行么', function(index){
+                        $.ajax({
+                            url:"/course/deletecourse",
+                            type:"GET",
+                            data:{cid:data.cid},
+                            dataType:'json',
+                            success:function(result){
+                                layer.alert("删除成功", {icon: 1},function (index1) {
+                                    layer.close(index1);
+                                    //xadmin.father_reload();//整个页面的刷新
+                                    table.reload('demo')
+                                });
+                            },
+                        });
+
+                    });
+
+                    break;
+                case 'edit':
+                    xadmin.open('编辑课程信息', '/course/courseedit/?cid=' + data.cid);
+                    break;
+
+                case  'editzj':
+                    xadmin.open('编辑课程章节信息', '/course/ZJ-list/?cid=' + data.cid);
+
+
+            };
+        });
+
+        form.on('submit(search)',function(data) {
+            //获取input的值
+            var name = data.field.name;
+            table.render({
+                elem: '#demo'
+                ,url: '/user/findAdminByFuzzyName' //数据接口
+                ,page: true //开启分页
+                ,where:{
+                    "name":name
+                }
+                ,response: {
+                    countName: 'count', //规定数据总数的字段名称，默认：count
+                    dataName: 'datas' //规定数据列表的字段名称，默认：data
+                }
+                ,cols: [
+                    [ //表头
+                        {field: 'adminid', title: 'ID', align:'center', width:50}
+                        ,{field: 'name', title: '用户名'}
+                        ,{field: 'phone', title: '手机'}
+                        ,{field: 'email', title: '邮箱'}
+                        ,{field: 'status', title: '状态',  templet:function(d){
+                            return  d.status == '1' ? "启动":"禁用";
+                        }}
+                        ,{field: 'admintype', title: '管理员类型'}
+                        ,{fixed: 'right', title:'操作',toolbar:'#toolbarDemo',  width:150}//开启头部工具栏，并为其绑定左侧模板
+                    ]
+                ]
+            });
+            return false;
+        });
+        //checkPermission();;
+    });
+
+</script>
+
+</html>
