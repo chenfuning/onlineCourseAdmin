@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>课程章节列表</title>
+    <header th:replace="header::html"></header>
+</head>
+<body>
+<div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">课程章节管理</a>
+            <a>
+                <cite>课程章节列表</cite></a>
+          </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row  layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <button class="layui-btn" onclick="addZ()" permission="" ><i class="layui-icon"></i>添加章</button>
+                    <button class="layui-btn" onclick="delZ()" permission="" ><i class="layui-icon"></i>删除章</button>
+                </div>
+
+                <div class="layui-card-body ">
+                    <table  id="demo" class="layui-hide" lay-filter="member"></table>
+                </div>
+                <script type="text/html" id="toolbarDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="jielist" >编辑节</a>
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    var cid=[[${cid}]];
+    layui.use('table',function () {
+        var table = layui.table;
+        var  form = layui.form;
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,url: '/coursezj/coursezjlist?cid='+cid //数据接口
+            ,page: true //开启分页
+            ,response:{
+                dataName:'datas'//规定数据列表的字段名称，默认：data
+            }
+            ,cols: [
+                [ //表头
+                    ,{field: 'zid', title: 'zid', align:'center', width:50}
+                    ,{field: 'name', title: '第几章'}
+                    ,{field: 'sort', title: '第几节'}
+                    ,{fixed: 'right', title:'操作',toolbar:'#toolbarDemo',  width:150}//开启头部工具栏，并为其绑定左侧模板
+                ]
+            ],
+            done:function(){
+                //checkPermission();
+            }
+        });
+        //监听工具条
+        table.on('tool(member)', function(obj){
+            var data = obj.data;
+            switch(obj.event){
+                case 'jielist':
+                    location.href='/coursezj/jielist/?sort=' + data.sort+'&cid='+cid
+                   //xadmin.open('编辑节信息', '/coursezj/jielist/?sort=' + data.sort+'&cid='+cid);
+                    break;
+            };
+        });
+       // checkPermission();;
+    });
+
+    function addZ() {
+        $.ajax({
+            url:"/coursezj/addZ?cid="+cid,
+            type:"GET",
+            success:function(result){
+                layer.alert("添加成功", {icon: 1},function (index1) {
+                    layer.close(index1);
+                    xadmin.father_reload();//整个页面的刷新
+                   // table.reload('demo')
+                });
+            },
+        });
+    }
+    function delZ() {
+        $.ajax({
+            url:"/coursezj/delZ?cid="+cid,
+            type:"GET",
+            success:function(result){
+                layer.alert("删除成功", {icon: 1},function (index1) {
+                    layer.close(index1);
+                    xadmin.father_reload();//整个页面的刷新
+                    // table.reload('demo')
+                });
+            },
+        });
+    }
+</script>
+
+</html>

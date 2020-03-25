@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>视频预览</title>
+    <style>
+        .main{
+            text-align: center; /*让div内部文字居中*/
+            background-color: #fff;
+            border-radius: 20px;
+            width: 600px;
+            height: auto;
+            margin: auto;
+            position: absolute;
+            top: 20%;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <video width="500" height=auto controls="controls" autoplay="autoplay">
+        <source th:src="@{'http://192.168.243.129:88/ning/'+${CourseZJ.videoUrl}}" type="video/mp4" />
+
+    </video>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <header th:replace="header::html"></header>
+</head>
+<body>
+<div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a>
+                <cite>节列表</cite></a>
+          </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row  layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <button class="layui-btn" onclick="fhback()"><i class="layui-icon"></i>返回编辑章</button>
+                    <button class="layui-btn" onclick="addJ()"  ><i class="layui-icon"></i>添加节</button>
+                </div>
+
+                <div class="layui-card-body ">
+                    <table  id="demo" class="layui-hide" lay-filter="member" ></table>
+                </div>
+                <script type="text/html" id="toolbarDemo">
+                    <a  class="layui-btn layui-btn-xs upload_btn" lay-event="upload" ><i class="layui-icon">&#xe67c;</i>选择视频</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="lookvideo" >预览视频</a>
+                    <a class="layui-btn layui-btn-xs" lay-event="save" permission="sys:user:edit">保存</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" permission="sys:user:del">删除</a>
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    var sort=[[${sort}]];
+    var cid=[[${cid}]];
+    var table;
+    var videoUrl="";
+    var zid;
+
+    layui.use(['table','upload'],function () {
+        table = layui.table;
+        var upload=layui.upload;
+        var  form = layui.form;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,url: '/coursezj/getjielist?sort='+sort+'&cid='+cid //数据接口
+            ,page: true //开启分页
+            ,response:{
+                dataName:'datas'//规定数据列表的字段名称，默认：data
+            }
+            ,cols: [
+                [ //表头
+                    ,{field: 'zid', title: 'zid', align:'center',width:150}
+                    ,{field: 'name', event: 'setSign',title: '标题'}
+                    ,{field: 'videoUrl', event: '',title: '视频地址'}
+                    ,{fixed: 'right', title:'操作',toolbar:'#toolbarDemo'}//开启头部工具栏，并为其绑定左侧模板
+                ]
+            ],
+            done:function(res, curr, count){
+                //checkPermission();
+                var tableElem = this.elem;
+                // table render出来实际显示的table组件
+                var tableViewElem = tableElem.next();
+                    // 渲染当前页面的所有的upload组件
+                    upload.render({
+                        elem:'.upload_btn'
+                        ,url: '/coursezj/uploadcoursevideo' //上传接口
+                        ,accept: 'file' //视频
+                        ,method: 'POST'  //可选项。HTTP类型，默认post
+                        ,data: {} //可选项。额外的参数，如：{id: 123, abc: 'xxx'}
+                        ,done: function(res){
+                            //上传完毕回调
+                            videoUrl=res.msg;
+                            layer.alert("视频上传成功");
+                            if(videoUrl)
+                                editVideourl(zid)
+                        }
+                        ,error: function(){
+                            //请求异常回调
+                            layer.alert("视频上传失败");
+                        }
+                    });
+
+            }
+         });
+
+
+
+        //监听工具条
+        table.on('tool(member)', function(obj){
+            var data = obj.data;
+            switch(obj.event){
+                case 'del':
+                    layer.confirm('真的删除行么', function(index){
+                        $.ajax({
+                            url:"/coursezj/deletejie",
+                            type:"GET",
+                            data:{zid:data.zid},
+                            dataType:'json',
+                            success:function(result){
+                                layer.alert("删除成功", {icon: 1},function (index1) {
+                                    layer.close(index1);
+                                    //xadmin.father_reload();//整个页面的刷新
+                                    table.reload('demo')
+                                });
+                            },
+                        });
+
+                    });
+
+                    break;
+                case 'upload':
+                   zid = obj.data.zid;
+                    break;
+                case 'save':
+                    console.log(data.name)
+                    savejie(data.zid,data.name,data.videoUrl);
+                    break;
+                case 'lookvideo':
+                    xadmin.open('视频','/coursezj/lookvedio/?zid=' + data.zid);
+                    break;
+                case 'setSign':
+                    layer.prompt({
+                        formType: 2
+                        , title: '修改 标题 为 [' + data.name + '] '
+                        , value: data.name
+                    }, function (value, index) {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            name: value
+                        });
+                    });
+                    break;
+            };
+        });
+
+       // checkPermission();;
+    });
+    function fhback() {
+        self.location.href="/coursezj/zjlist/?cid=" + cid;
+    }
+
+    function addJ() {
+        $.ajax({
+            url:"/coursezj/addJ?cid="+cid+"&sort="+sort,
+            type:"GET",
+            success:function(result){
+                //xadmin.father_reload();//整个页面的刷新
+                table.reload('demo')
+            },
+        });
+    }
+    function editVideourl(zid) {
+        $.ajax({
+            url:"/coursezj/updateVideourl",
+            type:"post",
+            data:{
+                zid:zid,
+                videoUrl:videoUrl
+            },
+            success:function(result){
+                //xadmin.father_reload();//整个页面的刷新
+                table.reload('demo')
+            },
+        });
+        videoUrl="";
+    }
+    function savejie(zid,name,videoUrl) {
+        $.ajax({
+            url:'/coursezj/savejie/?zid=' +zid+'&name='+name+'&videoUrl='+videoUrl,
+            type:"get",
+            data:{
+            },
+            success:function(result){
+                //xadmin.father_reload();//整个页面的刷新
+                table.reload('demo')
+            },
+        });
+    }
+</script>
+
+</html>

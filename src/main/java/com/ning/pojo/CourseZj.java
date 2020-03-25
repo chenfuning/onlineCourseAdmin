@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "course_zj")
-public class CourseZj {
+public class CourseZj  implements Comparable<CourseZj> {
     @Id
     private String zid;
 
@@ -183,5 +183,14 @@ public class CourseZj {
      */
     public void setUpdatecontent(String updatecontent) {
         this.updatecontent = updatecontent;
+    }
+
+    @Override
+    public int compareTo(CourseZj c) {
+        //自定义比较方法，如果认为此实体本身大则返回1，否则返回-1
+         if(this.sort >= c.getSort()){
+               return 1;
+           }
+         return -1;
     }
 }
